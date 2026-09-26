@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>THE CHAOS Ⅱ</title>
+  <style>
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: #14171e; overflow: hidden; touch-action: none; }
+    #unity-container { position: fixed; inset: 0; width: 100%; height: 100%; }
+    #unity-canvas { width: 100%; height: 100%; display: block; background: #14171e; }
+    #loading { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+               color: #ddd; font-family: sans-serif; font-size: 16px; }
+    #bar { width: 60%; max-width: 360px; height: 8px; background: #333; border-radius: 4px; margin-top: 12px; overflow: hidden; }
+    #bar > div { height: 100%; width: 0; background: #f8c040; }
+    #rotate { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: #14171e;
+              color: #ddd; font-family: sans-serif; font-size: 20px; text-align: center; z-index: 10; }
+    @media (orientation: portrait) and (pointer: coarse) { #rotate { display: flex; } }
+  </style>
+</head>
+<body>
+  <div id="unity-container"><canvas id="unity-canvas" tabindex="-1"></canvas></div>
+  <div id="loading"><div>読み込み中…</div><div id="bar"><div id="barFill"></div></div></div>
+  <div id="rotate">横向きにしてください<br><span style="font-size:14px;opacity:.7">(このゲームは横画面専用です)</span></div>
+  <div id="ios-hint" style="display:none;position:fixed;left:0;right:0;bottom:0;z-index:20;background:rgba(0,0,0,.85);color:#eee;font-family:sans-serif;font-size:14px;padding:10px 14px;text-align:center;">
+    全画面で遊ぶには: Safari の <b>共有</b> → <b>「ホーム画面に追加」</b> から起動してください
+    <button onclick="document.getElementById('ios-hint').style.display='none'" style="margin-left:12px;padding:6px 12px;border:0;border-radius:4px;background:#f8c040;color:#000;font-weight:bold;">閉じる</button>
+  </div>
+  <link rel="manifest" href="manifest.webmanifest">
+  <script>
+    // iPhone の Safari は全画面 API が使えないため、ホーム画面に追加していない場合だけ案内を出す
+    (function () {
+      var isIOS = /iP(hone|od)/.test(navigator.userAgent);
+      var standalone = window.navigator.standalone === true || window.matchMedia("(display-mode: standalone)").matches;
+      if (isIOS && !standalone) document.getElementById("ios-hint").style.display = "block";
+    })();
+  </script>
+  <script src="Build/webgl.loader.js?v=b24fb0c-002626"></script>
+  <script>
+    var canvas = document.querySelector("#unity-canvas");
+    var config = {
+      arguments: [],
+      dataUrl: "Build/webgl.data.unityweb?v=b24fb0c-002626",
+      frameworkUrl: "Build/webgl.framework.js.unityweb?v=b24fb0c-002626",
+      codeUrl: "Build/webgl.wasm.unityweb?v=b24fb0c-002626",
+      streamingAssetsUrl: "StreamingAssets",
+      companyName: "cardgame",
+      productName: "THE CHAOS Ⅱ",
+      productVersion: "0.1.0",
+    };
+    // スマホでは devicePixelRatio をそのまま使うと重いので上限 2 に抑える
+    config.devicePixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+
+    createUnityInstance(canvas, config, function (p) {
+      document.querySelector("#barFill").style.width = Math.round(p * 100) + "%";
+    }).then(function (instance) {
+      document.querySelector("#loading").style.display = "none";
+    }).catch(function (message) {
+      document.querySelector("#loading").textContent = "読み込みに失敗しました: " + message;
+    });
+  </script>
+</body>
+</html>

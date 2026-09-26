@@ -1,0 +1,10 @@
+{
+  "name": "THE CHAOS Ⅱ",
+  "short_name": "CHAOS Ⅱ",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#14171e",
+  "theme_color": "#14171e",
+  "start_url": "./",
+  "icons": []
+}
